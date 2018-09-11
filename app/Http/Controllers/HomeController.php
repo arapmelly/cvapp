@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -23,6 +24,8 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+       $component = (Auth::user()->user_type == 'admin') ? 'admin-dashboard' : 'agent-dashboard' ;
+
+        return redirect()->route('admindash', ['component'=>$component]);
     }
 }

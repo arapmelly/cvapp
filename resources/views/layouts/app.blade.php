@@ -35,6 +35,90 @@
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
 
+                        @guest
+
+                        @else
+
+                         @if(Auth::user()->user_type == 'agent')
+
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('admindash', ['component' => 'agent-dashboard']) }}">{{ __('DASHBOARD') }}</a>
+                            </li>
+
+                             <li class="nav-item">
+                                <a class="nav-link" href="{{ route('admindash', ['component' => 'agent-order']) }}">{{ __('ORDERS') }}</a>
+                            </li>
+                        @endif
+
+                        @if(Auth::user()->user_type == 'admin')
+
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('admindash', ['component' => 'admin-dashboard']) }}">{{ __('DASHBOARD') }}</a>
+                            </li>
+
+                             <li class="nav-item">
+                                <a class="nav-link" href="{{ route('admindash', ['component' => 'manage-order']) }}">{{ __('ORDERS') }}</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('admindash', ['component' => 'manage-payment']) }}">{{ __('PAYMENTS') }}</a>
+                            </li>
+
+                            
+
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('admindash', ['component' => 'manage-client']) }}">{{ __('CLIENTS') }}</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('admindash', ['component' => 'manage-agent']) }}">{{ __('AGENTS') }}</a>
+                            </li>
+
+                             <!-- <li class="nav-item dropdown">
+                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                    SETTINGS <span class="caret"></span>
+                                </a>
+
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                    
+
+                                    <a class="dropdown-item" href="{{ route('admindash', ['component' => 'manage-country']) }}">{{ __('Countries') }}
+                                    </a>
+
+                                    <a class="dropdown-item" href="{{ route('admindash', ['component' => 'manage-currency']) }}">{{ __('Currency') }}
+                                    </a>
+
+                                    <a class="dropdown-item" href="{{ route('admindash', ['component' => 'manage-service']) }}">{{ __('Services') }}
+                                    </a>
+
+                                    <a class="dropdown-item" href="{{ route('admindash', ['component' => 'manage-section']) }}">{{ __('Sections') }}
+                                    </a>
+
+                                    <a class="dropdown-item" href="{{ route('admindash', ['component' => 'manage-cost']) }}">{{ __('Costs') }}
+                                    </a>
+                                    <a class="dropdown-item" href="{{ route('admindash', ['component' => 'manage-template']) }}">{{ __('Templates') }}
+                                    </a>
+
+                                    <a class="dropdown-item" href="{{ route('admindash', ['component' => 'manage-payment-method']) }}">{{ __('Payment Methods') }}
+                                    </a>
+
+                                    <a class="dropdown-item" href="{{ route('admindash', ['component' => 'manage-notification']) }}">{{ __('Notifications') }}
+                                    </a>
+
+                                    <a class="dropdown-item" href="{{ route('admindash', ['component' => 'manage-field']) }}">{{ __('Career Fields') }}
+                                    </a>
+
+                                    <a class="dropdown-item" href="{{ route('admindash', ['component' => 'manage-category']) }}">{{ __('Blog Categories') }}
+                                    </a>
+
+                                    
+                                </div>
+                            </li> -->
+
+                        @endif
+
+                        @endguest
+
                     </ul>
 
                     <!-- Right Side Of Navbar -->
