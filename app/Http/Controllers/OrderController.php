@@ -10,10 +10,12 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Validator;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
 
 use App\Order;
 use App\Client;
 use App\Service;
+use App\Mail\SendOrder;
 
 class OrderController extends Controller
 {
@@ -192,5 +194,58 @@ class OrderController extends Controller
         $service = Service::find($id);
 
         return view('order.create', compact('service'));
+    }
+
+
+    public function submitWork(Request $request){
+
+        Log::info($request->all());
+
+        $path = $request->work_file->path();
+
+        $extension = $request->work_file->extension();
+
+        $rand = rand(10, 99999999);
+
+        $name = strtotime(date('d-m-Y')).'-'.$rand.'.'.$extension;
+
+        $upload_url = Client::uploadFile($path, $name);
+
+
+        $order = Order::find($request->order_id);
+        $order->attachment = $upload_url;
+        $order->attachment_description = $request->work_comment;
+        $order->order_status = 'completed';
+        $order->update();
+
+        return ['status'=>1, 'data'=>$order];
+    }
+
+
+    public function closeOrder($id)
+    {
+        //
+        $order = Order::find($id);
+        $order->order_status = 'closed';
+        $order->update();
+
+        return ['status'=>1, 'data'=>$order];
+    }
+
+
+
+    public function sendOrder($id)
+    {
+        //
+
+        $services = Service::all();
+
+        $order = Order::find($id);
+
+        $mail = Mail::to($order->client->email)->send(new SendOrder($order, $services));
+        
+        Log::info($mail);
+
+        return ['status'=>1, 'data'=>$order];
     }
 }

@@ -27,7 +27,7 @@
 							<th>Client</th>
 							<th>Service</th>
 							<th>Deadline</th>
-							<th>Status</th>
+							
 							
 							<th></th>
 						</thead>
@@ -42,31 +42,40 @@
 								<td>{{order.client.f_name}} {{order.client.l_name}} </td>
 								<td>{{order.service.name}}</td>
 								<td>{{order.deadline}}</td>
-								<td>
-									<ou-message-bar icon='Completed' type='success' v-if="order.is_requested">
-											REQUESTED &nbsp; &nbsp; 
-										</ou-message-bar>
+								
 
+								
 
-										
-
-								</td>
 
 								<td>
 									
+									<tr>
 
+										<td>
 									<ou-button type='primary' @click='openPreviewPanel(order)'>View CV</ou-button>
+								</td>
 
-
-									<span v-if="order.order.order_status != 'new' ">
+								<td>
+									<span v-if="order.order.order_status == 'assigned' ">
 										<ou-button type='primary' @click='uploadAttachment(order)' v-if="order.is_assigned">upload work</ou-button>
 								</span>
 
 								
 										<ou-button type='primary' @click='requestOrder(order)' v-if="!order.is_requested"> Request </ou-button>
 
-										
+										<span v-if="status == 'new' ">
+											
+											<ou-message-bar icon='Completed' type='success' v-if="order.is_requested" >
+											REQUESTED &nbsp; &nbsp; 
+										</ou-message-bar>
 
+										</span>
+
+										<ou-button type='primary' @click='openWorkPreviewPanel(order)' v-if="status == 'completed' ">View Work</ou-button>
+
+										
+									</td>
+								</tr>
 										
 									
 									
@@ -98,6 +107,18 @@
   			
   			</ou-panel>
 
+
+  			<ou-panel title='Work Preview Panel' size='xl' v-model='workPreviewPanel'>
+    			
+    			
+
+    			<p>this is the preview of the work submitted. if it does not appear refresh your browser</p>
+    			<hr>
+
+    			<iframe :src="workUrl" width="100%" height="600px"></iframe>
+  			
+  			</ou-panel>
+
           
             <!-- //end of preview view -->
 
@@ -114,16 +135,16 @@
     			<hr>
 
     			<label>Attachment</label>
-    			<input type="file" name="attachment_file" required>
+    			<input type="file" name="work_file" ref="work_file" v-on:change="handleFileUpload()" required>
 
 
-    			<ou-text-field type='multiline' v-model='attachment_comment' label='Comment' />
+    			<ou-text-field type='multiline' v-model='work_comment' label='Comment' />
 
     			<ou-checkbox v-model='is_completed'>Mark as Completed</ou-checkbox>
 
     			<br>
 
-    			<ou-button type='primary'>Save</ou-button>
+    			<ou-button type='primary' @click="submitWork(selectedOrder.order.id)">Save</ou-button>
   			
   			</ou-panel>
 
@@ -156,9 +177,11 @@
 				cvUrl: "",
 				previewPanel: false,
 				uploadAttachmentPanel: false,
-				attachment_file: '',
-				attachment_comment: '',
-				is_completed: false
+				work_file: '',
+				work_comment: '',
+				is_completed: false,
+				workUrl: '',
+				workPreviewPanel: false
 			}
 		},
 
@@ -227,10 +250,19 @@
 				this.previewPanel = true
 			},
 
+			openWorkPreviewPanel(order){
+
+				this.selectedOrder = order
+
+				this.workUrl = 'http://docs.google.com/gview?url='+this.selectedOrder.order.attachment+'&embedded=true'
+
+				this.workPreviewPanel = true
+			},
+
 			requestOrder(order){
 
 				let data = {
-					'order_id': order.id
+					'order_id': order.order.id
 				}
 
 				axios.post('/requests', data).then(response =>{
@@ -242,8 +274,35 @@
 
 
 			uploadAttachment(order){
+				this.selectedOrder = order
 
 				this.uploadAttachmentPanel = true;
+			},
+
+			handleFileUpload(){
+
+				this.work_file = this.$refs.work_file.files[0];
+
+				console.log(this.work_file)
+			},
+
+			submitWork(id){
+				
+
+				let formData = new FormData()
+				formData.append('work_file', this.work_file)
+				formData.append('work_comment', this.work_comment)
+				formData.append('order_id', id)
+
+				console.log(formData)
+
+				axios.post('/orders/work', formData, { headers: {'Content-Type': 'multipart/form-data' } }).then(response => {
+
+					this.uploadAttachmentPanel = false
+
+				}).catch(error =>{
+					alert(error)
+				})
 			}
 		}
 	}

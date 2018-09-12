@@ -39,3 +39,18 @@ Route::get('agent-orders/status/{status}', 'OrderController@agentOrderByStatus')
 
 
 Route::get('agentstats', 'DashboardController@agentstats');
+
+Route::post('orders/work', 'OrderController@submitWork');
+
+Route::get('orders/close/{id}', 'OrderController@closeOrder');
+
+Route::get('orders/send-order/{id}', 'OrderController@sendOrder');
+
+
+Route::get('/mailable', function () {
+    $order = App\Order::find(5);
+
+    $services = App\Service::all();
+
+    return new App\Mail\SendOrder($order, $services);
+});

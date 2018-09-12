@@ -202,6 +202,32 @@
   						</ou-pivot-item>
 
 
+              <span v-if="selectedOrder.order.order_status == 'completed' || selectedOrder.order.order_status == 'closed' ">
+              <ou-pivot-item label='Submitted Work' >
+
+                <span v-if="selectedOrder.order.order_status == 'completed' ">
+                    <ou-button type='primary' @click="closeOrder(selectedOrder.order.id)">Close Order</ou-button >
+                </span>
+
+
+                <span v-if="selectedOrder.order.order_status == 'closed' ">
+                    <ou-button type='primary' @click="sendOrder(selectedOrder.order.id)">Send Email</ou-button >
+
+                    <ou-button type='primary' @click="sendNotice(selectedOrder.order.id)">Send Notice</ou-button >
+
+                </span>
+
+                <hr>
+                
+
+                <iframe :src="workUrl" width="100%" height="600px"></iframe>
+                  
+
+                
+              </ou-pivot-item>
+            </span>
+
+
 					</ou-pivot>
                 	
 
@@ -238,7 +264,8 @@
 				manageOrderView: false,
 				listOrdersView: true,
 				selectedOrder: [],
-				cvUrl: ""
+				cvUrl: '',
+        workUrl: ''
 			}
 		},
 
@@ -270,6 +297,8 @@
 
 				this.cvUrl = 'http://docs.google.com/gview?url='+this.selectedOrder.client.cv_link+'&embedded=true'
 
+        this.workUrl = 'http://docs.google.com/gview?url='+this.selectedOrder.order.attachment+'&embedded=true'
+
 				this.listOrdersView = false
 
 				this.manageOrderView = true
@@ -296,7 +325,33 @@
 
 					alert(error)
 				})
-			}
+			},
+
+      closeOrder(id){
+
+        axios.get('/orders/close/'+id).then(response => {
+
+          alert('Order Has been closed')
+
+        }).catch(error => {
+
+          alert(error)
+
+        })
+
+      },
+
+      sendOrder(id){
+
+          axios.get('/orders/send-order/'+id).then(response => {
+
+            alert('Email Has been Send')
+
+          }).catch(error => {
+
+              alert(error)
+          })
+      }
 		}
 	}
 </script>

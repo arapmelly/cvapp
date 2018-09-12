@@ -49170,6 +49170,32 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -49186,7 +49212,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			manageOrderView: false,
 			listOrdersView: true,
 			selectedOrder: [],
-			cvUrl: ""
+			cvUrl: '',
+			workUrl: ''
 		};
 	},
 
@@ -49215,6 +49242,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 			this.cvUrl = 'http://docs.google.com/gview?url=' + this.selectedOrder.client.cv_link + '&embedded=true';
 
+			this.workUrl = 'http://docs.google.com/gview?url=' + this.selectedOrder.order.attachment + '&embedded=true';
+
 			this.listOrdersView = false;
 
 			this.manageOrderView = true;
@@ -49234,6 +49263,26 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				_this2.listOrdersView = true;
 
 				_this2.getOrders('new');
+			}).catch(function (error) {
+
+				alert(error);
+			});
+		},
+		closeOrder: function closeOrder(id) {
+
+			axios.get('/orders/close/' + id).then(function (response) {
+
+				alert('Order Has been closed');
+			}).catch(function (error) {
+
+				alert(error);
+			});
+		},
+		sendOrder: function sendOrder(id) {
+
+			axios.get('/orders/send-order/' + id).then(function (response) {
+
+				alert('Email Has been Send');
 			}).catch(function (error) {
 
 				alert(error);
@@ -49584,7 +49633,94 @@ var render = function() {
                           })
                         )
                       ])
-                    ])
+                    ]),
+                    _vm._v(" "),
+                    _vm.selectedOrder.order.order_status == "completed" ||
+                    _vm.selectedOrder.order.order_status == "closed"
+                      ? _c(
+                          "span",
+                          [
+                            _c(
+                              "ou-pivot-item",
+                              { attrs: { label: "Submitted Work" } },
+                              [
+                                _vm.selectedOrder.order.order_status ==
+                                "completed"
+                                  ? _c(
+                                      "span",
+                                      [
+                                        _c(
+                                          "ou-button",
+                                          {
+                                            attrs: { type: "primary" },
+                                            on: {
+                                              click: function($event) {
+                                                _vm.closeOrder(
+                                                  _vm.selectedOrder.order.id
+                                                )
+                                              }
+                                            }
+                                          },
+                                          [_vm._v("Close Order")]
+                                        )
+                                      ],
+                                      1
+                                    )
+                                  : _vm._e(),
+                                _vm._v(" "),
+                                _vm.selectedOrder.order.order_status == "closed"
+                                  ? _c(
+                                      "span",
+                                      [
+                                        _c(
+                                          "ou-button",
+                                          {
+                                            attrs: { type: "primary" },
+                                            on: {
+                                              click: function($event) {
+                                                _vm.sendOrder(
+                                                  _vm.selectedOrder.order.id
+                                                )
+                                              }
+                                            }
+                                          },
+                                          [_vm._v("Send Email")]
+                                        ),
+                                        _vm._v(" "),
+                                        _c(
+                                          "ou-button",
+                                          {
+                                            attrs: { type: "primary" },
+                                            on: {
+                                              click: function($event) {
+                                                _vm.sendNotice(
+                                                  _vm.selectedOrder.order.id
+                                                )
+                                              }
+                                            }
+                                          },
+                                          [_vm._v("Send Notice")]
+                                        )
+                                      ],
+                                      1
+                                    )
+                                  : _vm._e(),
+                                _vm._v(" "),
+                                _c("hr"),
+                                _vm._v(" "),
+                                _c("iframe", {
+                                  attrs: {
+                                    src: _vm.workUrl,
+                                    width: "100%",
+                                    height: "600px"
+                                  }
+                                })
+                              ]
+                            )
+                          ],
+                          1
+                        )
+                      : _vm._e()
                   ],
                   1
                 )
@@ -49810,6 +49946,27 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -49829,9 +49986,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			cvUrl: "",
 			previewPanel: false,
 			uploadAttachmentPanel: false,
-			attachment_file: '',
-			attachment_comment: '',
-			is_completed: false
+			work_file: '',
+			work_comment: '',
+			is_completed: false,
+			workUrl: '',
+			workPreviewPanel: false
 		};
 	},
 
@@ -49891,11 +50050,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 			this.previewPanel = true;
 		},
+		openWorkPreviewPanel: function openWorkPreviewPanel(order) {
+
+			this.selectedOrder = order;
+
+			this.workUrl = 'http://docs.google.com/gview?url=' + this.selectedOrder.order.attachment + '&embedded=true';
+
+			this.workPreviewPanel = true;
+		},
 		requestOrder: function requestOrder(order) {
 			var _this3 = this;
 
 			var data = {
-				'order_id': order.id
+				'order_id': order.order.id
 			};
 
 			axios.post('/requests', data).then(function (response) {
@@ -49905,8 +50072,32 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			});
 		},
 		uploadAttachment: function uploadAttachment(order) {
+			this.selectedOrder = order;
 
 			this.uploadAttachmentPanel = true;
+		},
+		handleFileUpload: function handleFileUpload() {
+
+			this.work_file = this.$refs.work_file.files[0];
+
+			console.log(this.work_file);
+		},
+		submitWork: function submitWork(id) {
+			var _this4 = this;
+
+			var formData = new FormData();
+			formData.append('work_file', this.work_file);
+			formData.append('work_comment', this.work_comment);
+			formData.append('order_id', id);
+
+			console.log(formData);
+
+			axios.post('/orders/work', formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then(function (response) {
+
+				_this4.uploadAttachmentPanel = false;
+			}).catch(function (error) {
+				alert(error);
+			});
 		}
 	}
 });
@@ -50007,85 +50198,112 @@ var render = function() {
                         _vm._v(" "),
                         _c("td", [_vm._v(_vm._s(order.deadline))]),
                         _vm._v(" "),
-                        _c(
-                          "td",
-                          [
-                            order.is_requested
-                              ? _c(
-                                  "ou-message-bar",
-                                  {
-                                    attrs: {
-                                      icon: "Completed",
-                                      type: "success"
-                                    }
-                                  },
-                                  [
-                                    _vm._v(
-                                      "\n\t\t\t\t\t\t\t\t\t\t\tREQUESTED     \n\t\t\t\t\t\t\t\t\t\t"
-                                    )
-                                  ]
-                                )
-                              : _vm._e()
-                          ],
-                          1
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "td",
-                          [
+                        _c("td", [
+                          _c("tr", [
                             _c(
-                              "ou-button",
-                              {
-                                attrs: { type: "primary" },
-                                on: {
-                                  click: function($event) {
-                                    _vm.openPreviewPanel(order)
-                                  }
-                                }
-                              },
-                              [_vm._v("View CV")]
-                            ),
-                            _vm._v(" "),
-                            order.order.order_status != "new"
-                              ? _c(
-                                  "span",
-                                  [
-                                    order.is_assigned
-                                      ? _c(
-                                          "ou-button",
-                                          {
-                                            attrs: { type: "primary" },
-                                            on: {
-                                              click: function($event) {
-                                                _vm.uploadAttachment(order)
-                                              }
-                                            }
-                                          },
-                                          [_vm._v("upload work")]
-                                        )
-                                      : _vm._e()
-                                  ],
-                                  1
-                                )
-                              : _vm._e(),
-                            _vm._v(" "),
-                            !order.is_requested
-                              ? _c(
+                              "td",
+                              [
+                                _c(
                                   "ou-button",
                                   {
                                     attrs: { type: "primary" },
                                     on: {
                                       click: function($event) {
-                                        _vm.requestOrder(order)
+                                        _vm.openPreviewPanel(order)
                                       }
                                     }
                                   },
-                                  [_vm._v(" Request ")]
+                                  [_vm._v("View CV")]
                                 )
-                              : _vm._e()
-                          ],
-                          1
-                        )
+                              ],
+                              1
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "td",
+                              [
+                                order.order.order_status == "assigned"
+                                  ? _c(
+                                      "span",
+                                      [
+                                        order.is_assigned
+                                          ? _c(
+                                              "ou-button",
+                                              {
+                                                attrs: { type: "primary" },
+                                                on: {
+                                                  click: function($event) {
+                                                    _vm.uploadAttachment(order)
+                                                  }
+                                                }
+                                              },
+                                              [_vm._v("upload work")]
+                                            )
+                                          : _vm._e()
+                                      ],
+                                      1
+                                    )
+                                  : _vm._e(),
+                                _vm._v(" "),
+                                !order.is_requested
+                                  ? _c(
+                                      "ou-button",
+                                      {
+                                        attrs: { type: "primary" },
+                                        on: {
+                                          click: function($event) {
+                                            _vm.requestOrder(order)
+                                          }
+                                        }
+                                      },
+                                      [_vm._v(" Request ")]
+                                    )
+                                  : _vm._e(),
+                                _vm._v(" "),
+                                _vm.status == "new"
+                                  ? _c(
+                                      "span",
+                                      [
+                                        order.is_requested
+                                          ? _c(
+                                              "ou-message-bar",
+                                              {
+                                                attrs: {
+                                                  icon: "Completed",
+                                                  type: "success"
+                                                }
+                                              },
+                                              [
+                                                _vm._v(
+                                                  "\n\t\t\t\t\t\t\t\t\t\t\tREQUESTED     \n\t\t\t\t\t\t\t\t\t\t"
+                                                )
+                                              ]
+                                            )
+                                          : _vm._e()
+                                      ],
+                                      1
+                                    )
+                                  : _vm._e(),
+                                _vm._v(" "),
+                                _vm.status == "completed"
+                                  ? _c(
+                                      "ou-button",
+                                      {
+                                        attrs: { type: "primary" },
+                                        on: {
+                                          click: function($event) {
+                                            _vm.openWorkPreviewPanel(order)
+                                          }
+                                        }
+                                      },
+                                      [_vm._v("View Work")]
+                                    )
+                                  : _vm._e()
+                              ],
+                              1
+                            )
+                          ])
+                        ])
                       ])
                     })
                   )
@@ -50125,6 +50343,33 @@ var render = function() {
       _c(
         "ou-panel",
         {
+          attrs: { title: "Work Preview Panel", size: "xl" },
+          model: {
+            value: _vm.workPreviewPanel,
+            callback: function($$v) {
+              _vm.workPreviewPanel = $$v
+            },
+            expression: "workPreviewPanel"
+          }
+        },
+        [
+          _c("p", [
+            _vm._v(
+              "this is the preview of the work submitted. if it does not appear refresh your browser"
+            )
+          ]),
+          _vm._v(" "),
+          _c("hr"),
+          _vm._v(" "),
+          _c("iframe", {
+            attrs: { src: _vm.workUrl, width: "100%", height: "600px" }
+          })
+        ]
+      ),
+      _vm._v(" "),
+      _c(
+        "ou-panel",
+        {
           attrs: { title: "Upload Work", size: "md" },
           model: {
             value: _vm.uploadAttachmentPanel,
@@ -50146,17 +50391,23 @@ var render = function() {
           _c("label", [_vm._v("Attachment")]),
           _vm._v(" "),
           _c("input", {
-            attrs: { type: "file", name: "attachment_file", required: "" }
+            ref: "work_file",
+            attrs: { type: "file", name: "work_file", required: "" },
+            on: {
+              change: function($event) {
+                _vm.handleFileUpload()
+              }
+            }
           }),
           _vm._v(" "),
           _c("ou-text-field", {
             attrs: { type: "multiline", label: "Comment" },
             model: {
-              value: _vm.attachment_comment,
+              value: _vm.work_comment,
               callback: function($$v) {
-                _vm.attachment_comment = $$v
+                _vm.work_comment = $$v
               },
-              expression: "attachment_comment"
+              expression: "work_comment"
             }
           }),
           _vm._v(" "),
@@ -50176,7 +50427,18 @@ var render = function() {
           _vm._v(" "),
           _c("br"),
           _vm._v(" "),
-          _c("ou-button", { attrs: { type: "primary" } }, [_vm._v("Save")])
+          _c(
+            "ou-button",
+            {
+              attrs: { type: "primary" },
+              on: {
+                click: function($event) {
+                  _vm.submitWork(_vm.selectedOrder.order.id)
+                }
+              }
+            },
+            [_vm._v("Save")]
+          )
         ],
         1
       )
@@ -50195,8 +50457,6 @@ var staticRenderFns = [
       _c("th", [_vm._v("Service")]),
       _vm._v(" "),
       _c("th", [_vm._v("Deadline")]),
-      _vm._v(" "),
-      _c("th", [_vm._v("Status")]),
       _vm._v(" "),
       _c("th")
     ])

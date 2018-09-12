@@ -15,13 +15,13 @@ class DashboardController extends Controller
 
     public function agentstats(){
 
-    	$orders = DB::table('orders')->get();
+    	$orders = DB::table('orders')->where('order_status', '=', 'new')->where('is_assigned', '=', false)->get();
 
-    	$agent_orders = DB::table('orders')->where('order_status', '=', 'assigned')->where('user_id', '=', Auth::id())->get();
+    	$agent_orders = DB::table('orders')->where('is_assigned', '=', true)->where('user_id', '=', Auth::id())->get();
 
     	$new_orders = $orders->count();
 
-    	$assigned_orders = $agent_orders->count();
+    	$assigned_orders = $agent_orders->where('order_status', '=', 'assigned')->count();
 
     	$completed = $agent_orders->where('order_status', '=', 'completed')->count();
 
