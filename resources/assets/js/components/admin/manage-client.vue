@@ -127,7 +127,7 @@
 				clients: [],
 				id: '',
 				f_name: '',
-				l_name: ''
+				l_name: '',
 				email: '',
 				phone:'',
 				createPanel: false,

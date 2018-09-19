@@ -41,6 +41,7 @@ Vue.use(axios);
 Vue.component('example-component', require('./components/ExampleComponent.vue'));
 Vue.component('manage-agent', require('./components/admin/manage-agent.vue'));
 Vue.component('manage-order', require('./components/admin/manage-order.vue'));
+Vue.component('manage-client', require('./components/admin/manage-client.vue'));
 Vue.component('agent-order', require('./components/agent/agent-orders.vue'));
 Vue.component('agent-dashboard', require('./components/agent/agent-dashboard.vue'));
 
